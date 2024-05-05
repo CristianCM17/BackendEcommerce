@@ -39,7 +39,7 @@ router.post('/products',async(req,res)=>{
     res.send(newProduct);
 })
 
-router.put('/products',async(req,res)=>{
+router.put('/products/:id',async(req,res)=>{
     const productoUpdated=await prisma.product.update({
         where: {
             idProduct: parseInt(req.params.id)
