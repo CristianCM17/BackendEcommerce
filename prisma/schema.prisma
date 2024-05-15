@@ -29,3 +29,18 @@ model Category {
   name String @unique
   products Product[]
 }
+
+model User{
+  idUser Int @id @default(autoincrement())
+  name String 
+  lastName String
+  isAdmin Boolean @default(false)
+  email String
+  password String
+  phone String
+  street String
+  country String
+  state String
+  city String
+  postcode String
+}
