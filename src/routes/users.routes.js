@@ -19,7 +19,6 @@ router.post('/users', async (req, res) => {
             data: {
                 name: req.body.name,
                 lastName: req.body.lastName,
-                isAdmin: req.body.isAdmin,
                 email: req.body.email,
                 password: bcrypt.hashSync(req.body.password, 10),
                 phone: req.body.phone,
@@ -61,7 +60,8 @@ router.post('/login', async (req, res) => {
                         "user:write"
                     ]*/
                 },
-                secret
+                secret,
+                {expiresIn : '1d'}
             )
             res.status(200).send({user: user.email , token: token})
         }
