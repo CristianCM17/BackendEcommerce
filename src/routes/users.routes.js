@@ -9,9 +9,25 @@ router.get('/users', async (req, res) => {
         const users = await prisma.user.findMany();
         res.status(200).send(users);
     } catch (error) {
-        res.status(500).json({ success: false })
+        res.status(500).json({ success: false,message: "Error al recuperar usuarios" })
     }
 })
+
+router.get('/users/:email', async (req, res) => {
+        try {
+        const email = req.params.email;
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        });
+
+        res.status(200).send(user); 
+        } catch (error) {
+        res.status(500).json({ success: false, message: "usuario no encontrado"})
+        }
+})
+
 router.post('/users', async (req, res) => {
 
     try {

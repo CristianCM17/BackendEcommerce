@@ -14,33 +14,44 @@ datasource db {
 }
 
 model Product {
-  idProduct Int @id @default(autoincrement())
-  name String
-  price Float
-  createdAt DateTime @default(now())
-  stock Int
-  image String @default("")
+  idProduct  Int      @id @default(autoincrement())
+  name       String
+  price      Float
+  createdAt  DateTime @default(now())
+  stock      Int
+  image      String   @default("")
   categoryId Int
-  category Category @relation(fields: [categoryId], references: [idCategory])
+  category   Category @relation(fields: [categoryId], references: [idCategory])
 }
 
 model Category {
-  idCategory Int @id @default(autoincrement())
-  name String @unique
-  products Product[]
+  idCategory Int       @id @default(autoincrement())
+  name       String    @unique
+  products   Product[]
 }
 
-model User{
-  idUser Int @id @default(autoincrement())
-  name String 
+model User {
+  idUser   Int     @id @default(autoincrement())
+  name     String
   lastName String
-  isAdmin Boolean @default(false)
-  email String
+  isAdmin  Boolean @default(false)
+  email    String  @unique
   password String
-  phone String
-  street String
-  country String
-  state String
-  city String
+  phone    String
+  street   String
+  country  String
+  state    String
+  city     String
   postcode String
+  orders   Order[]
+}
+
+model Order {
+  idOrder         Int      @id @default(autoincrement())
+  idUser          Int
+  status          String   @default("pending")
+  date            DateTime @default(now())
+  total           Float
+  shippingAddress String
+  user            User     @relation(fields: [idUser], references: [idUser])
 }
