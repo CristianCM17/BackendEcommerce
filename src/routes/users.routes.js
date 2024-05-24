@@ -53,6 +53,42 @@ router.post('/users', async (req, res) => {
 
 })
 
+router.post('/users', async (req, res) => {
+
+    try {
+        const newUser = await prisma.user.create({
+            data: {
+                name: req.body.name,
+                lastName: req.body.lastName,
+                email: req.body.email,
+                password: bcrypt.hashSync(req.body.password, 10),
+                phone: req.body.phone,
+                street: req.body.street,
+                country: req.body.country,
+                state: req.body.state,
+                city: req.body.city,
+                postcode: req.body.postcode
+            }
+        });
+        res.status(200).send(newUser);
+
+    } catch (error) {
+        res.status(500).json({ success: false })
+    }
+
+})
+
+router.put('/users/:email',async(req,res)=>{
+    const userUpdated=await prisma.user.update({
+        where: {
+            email: req.params.email
+        },
+        data: req.body
+    });
+
+   return res.status(200).send(userUpdated);
+})
+
 router.post('/login', async (req, res) => {
     const secret = process.env.SECRET;
     try {

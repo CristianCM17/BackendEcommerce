@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Product {
-  idProduct  Int      @id @default(autoincrement())
-  name       String
-  price      Float
-  createdAt  DateTime @default(now())
-  stock      Int
-  image      String   @default("")
-  categoryId Int
-  category   Category @relation(fields: [categoryId], references: [idCategory])
+  idProduct   Int           @id @default(autoincrement())
+  name        String
+  price       Float
+  createdAt   DateTime      @default(now())
+  stock       Int
+  image       String        @default("")
+  categoryId  Int
+  category    Category      @relation(fields: [categoryId], references: [idCategory])
+  ordenDetail OrderDetail[]
 }
 
 model Category {
@@ -47,11 +48,22 @@ model User {
 }
 
 model Order {
-  idOrder         Int      @id @default(autoincrement())
+  idOrder         Int           @id @default(autoincrement())
   idUser          Int
-  status          String   @default("pending")
-  date            DateTime @default(now())
+  status          String        @default("pending")
+  date            DateTime      @default(now())
   total           Float
   shippingAddress String
-  user            User     @relation(fields: [idUser], references: [idUser])
+  user            User          @relation(fields: [idUser], references: [idUser])
+  orderDetails    OrderDetail[]
+}
+
+model OrderDetail {
+  idOrder   Int
+  idProduct Int
+  quantity  Int
+  order     Order   @relation(fields: [idOrder], references: [idOrder])
+  product   Product @relation(fields: [idProduct], references: [idProduct])
+
+  @@id([idOrder, idProduct])
 }
