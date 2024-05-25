@@ -19,7 +19,31 @@ router.post('/ordersDetail',async (req,res)=>{
 router.get('/ordersDetail',async (req,res)=>{
 
     try {
-        const orders= await prisma.orderDetail.findMany();
+        const orders= await prisma.orderDetail.findMany({
+            include: {
+                product: true
+            }
+        });
+        res.status(200).send(orders);
+
+    } catch (error) {
+        res.status(400).json({success: false, message: "No se pudieron recuperar el detalle de la orden"})
+    }
+})
+
+router.get('/ordersDetail/:idorder',async (req,res)=>{
+    const idOrder = req.params.idorder
+    try {
+        const orders= await prisma.orderDetail.findMany({
+            where: {
+                order: {
+                    idOrder: parseInt(idOrder)
+                }
+            },
+            include: {
+                product: true
+            }
+        });
         res.status(200).send(orders);
 
     } catch (error) {
