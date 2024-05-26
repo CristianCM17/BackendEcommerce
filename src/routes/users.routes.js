@@ -126,4 +126,41 @@ router.post('/login', async (req, res) => {
     }
 })
 
+router.get('/usuarios/reporte', async (req, res) => {
+    try {
+      const usuarios = await prisma.user.findMany({
+        where: {
+            isAdmin: false, // Filtrar los usuarios que no son administradores
+          },
+        include: {
+          orders: {
+            include: {
+              orderDetails: true,
+            },
+          },
+        },
+      });
+  
+      const usuariosConTotales = usuarios.map(usuario => {
+        let totalOrdenes = usuario.orders.length;
+        let totalProductosComprados = usuario.orders.reduce((total, order) => {
+          return total + order.orderDetails.reduce((acc, orderDetail) => {
+            return acc + orderDetail.quantity;
+          }, 0);
+        }, 0);
+  
+        return {
+          email: usuario.email,
+          totalOrdenes,
+          totalProductosComprados,
+        };
+      });
+  
+      res.send(usuariosConTotales);
+    } catch (error) {
+      console.error('Error al obtener los datos de los usuarios:', error);
+      res.status(500).json({ error: 'Ocurrió un error al procesar la solicitud' });
+    }
+  });
+
 export default router;

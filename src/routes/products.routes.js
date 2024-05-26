@@ -13,38 +13,70 @@ router.get('/products/:id', async (req,res) => {
         where: {
             idProduct: parseInt(req.params.id)
         },
-        include: { //con cual tabla se va a relacionar para ver la categoria en el json
-            category: true
-        }
     });
 
    return res.send(product);
 })
 
-router.delete('/products/:id', async (req,res) => {
-    const productDeleted = await prisma.product.delete({
-        where: {
-            idProduct: parseInt(req.params.id)
-        }
-    });
+router.delete('/products/:idProduct', async (req, res) => {
+    const { idProduct } = req.params;
 
-   return res.send(productDeleted);
-})
+    try {
+        //eliminar registros dependientes en OrderDetail
+        await prisma.orderDetail.deleteMany({
+            where: { idProduct: parseInt(idProduct) },
+        });
+
+      
+        const deletedProduct = await prisma.product.delete({
+            where: { idProduct: parseInt(idProduct) },
+        });
+ 
+        res.status(204).send();
+    } catch (error) {
+        console.error(error);
+
+        
+        if (error.code === 'P2025') {
+            res.status(404).json({ error: 'Product not found' });
+        } else {
+            
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+});
+
 
 router.post('/products',async(req,res)=>{
+    const data = {
+        name: req.body.name,
+        price: parseFloat(req.body.price),
+        stock: parseInt(req.body.stock),
+        image: req.body.image,
+        categoryId: parseInt(req.body.categoryId),
+        
+    }
     const newProduct=await prisma.product.create({
-        data: req.body
+        data: data
     });
 
     res.send(newProduct);
 })
 
 router.put('/products/:id',async(req,res)=>{
+    const data = {
+        name: req.body.name,
+        price: parseFloat(req.body.price),
+        stock: parseInt(req.body.stock),
+        image: req.body.image,
+        categoryId: parseInt(req.body.categoryId),
+        
+    }
     const productoUpdated=await prisma.product.update({
         where: {
             idProduct: parseInt(req.params.id)
         },
-        data: req.body
+        data: data
     });
 
    return res.send(productoUpdated);
