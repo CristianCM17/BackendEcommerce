@@ -163,4 +163,50 @@ router.get('/usuarios/reporte', async (req, res) => {
     }
   });
 
+  router.get('/usuarios/reporte/:email', async (req, res) => {
+    const { email } = req.params;
+  
+    if (!email) {
+      return res.status(400).json({ error: 'Email parameter is required' });
+    }
+  
+    try {
+      const usuario = await prisma.user.findUnique({
+        where: {
+          email: email,   // Filtrar por el correo recibido
+          isAdmin: false, // Filtrar los usuarios que no son administradores
+        },
+        include: {
+          orders: {
+            include: {
+              orderDetails: true,
+            },
+          },
+        },
+      });
+  
+      if (!usuario) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const totalOrdenes = usuario.orders.length;
+      const totalProductosComprados = usuario.orders.reduce((total, order) => {
+        return total + order.orderDetails.reduce((acc, orderDetail) => {
+          return acc + orderDetail.quantity;
+        }, 0);
+      }, 0);
+  
+      const usuarioConTotales = {
+        email: usuario.email,
+        totalOrdenes,
+        totalProductosComprados,
+      };
+  
+      res.send([usuarioConTotales]);
+    } catch (error) {
+      console.error('Error al obtener los datos del usuario:', error);
+      res.status(500).json({ error: 'Ocurrió un error al procesar la solicitud' });
+    }
+  });
+
 export default router;
