@@ -51,6 +51,35 @@ router.get('/orders/:email', async (req, res) => {
     }
 })
 
+router.patch('/orders/:idOrder/', async (req, res) => {
+    const { idOrder } = req.params;
+    const { newStatus } = req.body;
+  
+    try {
+      // Buscar la orden por su ID
+      const order = await prisma.order.findUnique({
+        where: { idOrder: Number(idOrder) },
+      });
+  
+      if (!order) {
+        return res.status(404).json({ error: 'La orden no fue encontrada.' });
+      }
+  
+      // Actualizar el estado de la orden
+      const updatedOrder = await prisma.order.update({
+        where: { idOrder: Number(idOrder) },
+        data: { status: newStatus },
+      });
+  
+
+      res.json({ message: 'Estado de la orden actualizado exitosamente.', order: updatedOrder });
+    } catch (error) {
+      console.error('Error al actualizar el estado de la orden:', error);
+      res.status(500).json({ error: 'Ocurrió un error al actualizar el estado de la orden.' });
+    }
+  });
+  
+
 
 
 export default router;
