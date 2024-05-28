@@ -4,6 +4,7 @@ import categoriesRoutes from './routes/categories.routes.js'
 import usersRoutes from './routes/users.routes.js'
 import ordersRouters from './routes/order.routes.js'
 import ordersDetailRouters from './routes/orderDetails.routes.js'
+import cuponesRouters from './routes/cupones.routes.js'
 import cors from 'cors'
 const app = express()
 const port = 3000
@@ -17,6 +18,7 @@ app.use('/api',categoriesRoutes)
 app.use('/api',usersRoutes)
 app.use('/api',ordersRouters)
 app.use('/api',ordersDetailRouters)
+app.use('/api',cuponesRouters)
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
